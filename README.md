@@ -6,8 +6,10 @@ https://github.com/magomimmo/modern-cljs/blob/master/doc/second-edition/tutorial
 ## usage 
 boot dev
 
- http://localhost:3000/index.html
+http://localhost:3000/index.html
 
+for cursive-ide use
+boot lein-generate
 
 ## repl
 
