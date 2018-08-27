@@ -22,6 +22,8 @@
                  [enlive "1.1.6"]
                  [adzerk/boot-test "1.2.0"]
                  [crisptrutski/boot-cljs-test "0.2.1-SNAPSHOT"]
+                 [reagent "0.6.0"]
+                 [cljsjs/marked "0.3.5-0"]
                  ])
 
 (require '[adzerk.boot-cljs :refer [cljs]]
@@ -35,8 +37,7 @@
 (def defaults {:test-dirs #{"test/cljc" } ;"test/clj" "test/cljs"
                :output-to "main.js"
                :testbed :phantom
-               :namespaces '#{modern-cljs.shopping.validators-test
-                              modern-cljs.login.validators-test}})
+               :namespaces '#{modern-cljs.reagent}})
 
 (deftask add-source-paths
   "Add paths to :source-paths environment variable"
@@ -44,37 +45,7 @@
   (merge-env! :source-paths dirs)
   identity)
 
-(deftask tdd
-  "Launch a customizable TDD Environment"
-  [e testbed        ENGINE kw     "the JS testbed engine (default phantom)" 
-   k httpkit               bool   "Use http-kit web server (default jetty)"
-   n namespaces     NS     #{sym} "the set of namespace symbols to run tests in"
-   o output-to      NAME   str    "the JS output file name for test (default main.js)"
-   O optimizations  LEVEL  kw     "the optimization level (default none)"
-   p port           PORT   int    "the web server port to listen on (default 3000)"
-   t dirs           PATH   #{str} "test paths (default test/clj test/cljs test/cljc)"   
-   v verbose               bool   "Print which files have changed (default false)"]
-  (let [dirs (or dirs (:test-dirs defaults))
-        output-to (or output-to (:output-to defaults))
-        testbed (or testbed (:testbed defaults))
-        namespaces (or namespaces (:namespaces defaults))]
-    (comp
-     (serve :handler 'modern-cljs.core/app
-            :resource-root "target"
-            :reload true
-            :httpkit httpkit
-            :port port)
-     (add-source-paths :dirs dirs)
-     (watch :verbose verbose)
-     (reload :ws-host "localhost")
-     (cljs-repl)
-     (test-cljs :out-file output-to 
-                :js-env testbed 
-                :namespaces namespaces
-                :update-fs? true
-                :optimizations optimizations)
-     (test :namespaces namespaces)
-     (target :dir #{"target"}))))
+
 
 (deftask dev 
   "Launch immediate feedback dev environment"
