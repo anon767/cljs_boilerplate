@@ -24,6 +24,7 @@
                  [crisptrutski/boot-cljs-test "0.2.1-SNAPSHOT"]
                  [reagent "0.6.0"]
                  [cljsjs/marked "0.3.5-0"]
+                 [cljs-ajax "0.7.4"]
                  ])
 
 (require '[adzerk.boot-cljs :refer [cljs]]

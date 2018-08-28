@@ -1,15 +1,31 @@
 (ns modern-cljs.reagent
-  (:require [reagent.core :as r :refer [render]] ;; refer render to be used in the init function
+  (:require [reagent.core :as r :refer [render]]            ;; refer render to be used in the init function
             [domina.core :as dom :refer [by-id]]
             [clojure.string :as s :refer [trim blank?]]
-            [cljsjs.marked]))
+            [cljsjs.marked]
+            [ajax.util]
+            [ajax.core :refer [GET POST ajax-request json-request-format json-response-format]]))
 
-(def data (r/atom [{:id 1
+(defn handler2 [[ok response]]
+  (if ok
+    (.log js/console (str response))
+    (.error js/console (str response))))
+(ajax-request
+  {:uri "/send-message"
+   :method :post
+   :params {:message "Hello World"
+            :user    "Bob"}
+   :handler handler2
+   :format (json-request-format)
+   :response-format (json-response-format {:keywords? true})})
+
+
+(def data (r/atom [{:id     1
                     :author "Pete Hunt"
-                    :text "This is one comment"}
-                   {:id 2
+                    :text   "This is one comment"}
+                   {:id     2
                     :author "Jordan Walke"
-                    :text "This is *another* comment"}]))
+                    :text   "This is *another* comment"}]))
 
 (defn comment-component [author comment]
   [:div
@@ -27,26 +43,26 @@
         text (trim (:text @comment))]
     (reset! comment {:author "" :text ""})
     (when-not (or (blank? author) (blank? text))
-              (swap! comments conj {:id (.getTime (js/Date.)) :author author :text text}))))
+      (swap! comments conj {:id (.getTime (js/Date.)) :author author :text text}))))
 
 (defn comment-form [comments]
   (let [comment (r/atom {:author "" :text ""})]
     (fn [comments]
       [:form
-       [:input {:type "text"
+       [:input {:type        "text"
                 :placeholder "Your name"
-                :value (:author @comment)
-                :on-change #(swap! comment assoc :author (-> %
+                :value       (:author @comment)
+                :on-change   #(swap! comment assoc :author (-> %
+                                                               .-target
+                                                               .-value))}]
+       [:input {:type        "text"
+                :placeholder "Say something"
+                :value       (:text @comment)
+                :on-change   #(swap! comment assoc :text (-> %
                                                              .-target
                                                              .-value))}]
-       [:input {:type "text"
-                :placeholder "Say something"
-                :value (:text @comment)
-                :on-change #(swap! comment assoc :text (-> %
-                                                           .-target
-                                                           .-value))}]
-       [:input {:type "button"
-                :value "Post"
+       [:input {:type     "button"
+                :value    "Post"
                 :on-click #(handle-comment-on-click comments comment)}]])))
 
 (defn comment-box [comments]
