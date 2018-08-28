@@ -17,20 +17,20 @@
   (if ok
     ;;(.log js/console (r/atom (vec (flatten (conj @data response)))))
     ;;(doseq [item response] (swap! data (conj item)))
-    (doseq [item response] (swap! data conj item))
+    (swap! data #(vec (concat % response)))
     (.error js/console (str response))))
 
 (.log js/console data)
 
 (defn pull []
   (ajax-request
-   {:uri             "http://localhost:3000/data.json"
-    :method          :get
-    ;;:params {:message "Hello World"
-    ;;         :user    "Bob"
-    :handler         handler2
-    :format          (json-request-format)
-    :response-format (json-response-format {:keywords? true})}))
+    {:uri             "http://localhost:3000/data.json"
+     :method          :get
+     ;;:params {:message "Hello World"
+     ;;         :user    "Bob"
+     :handler         handler2
+     :format          (json-request-format)
+     :response-format (json-response-format {:keywords? true})}))
 (pull)
 
 (defn comment-component [author comment]
@@ -49,7 +49,7 @@
         text (trim (:text @comment))]
     (reset! comment {:author "" :text ""})
     (when-not (or (blank? author) (blank? text))
-              (swap! comments conj {:id (.getTime (js/Date.)) :author author :text text}))))
+      (swap! comments conj {:id (.getTime (js/Date.)) :author author :text text}))))
 
 (defn comment-form [comments]
   (let [comment (r/atom {:author "" :text ""})]
