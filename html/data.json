@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1388534400000,
+    "author": "Pete Hunt",
+    "text": "Hey there!"
+  },
+  {
+    "id": 1420070400000,
+    "author": "Paul O’Shannessy",
+    "text": "React is *great*!"
+  },
+  {
+    "id": 3,
+    "author": "Dan Holmsand",
+    "text": "Reagent 0.6.0-alpha is here. Check it out! http://reagent-project.github.io/news/news060-alpha.html"
+  }
+]

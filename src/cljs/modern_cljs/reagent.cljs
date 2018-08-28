@@ -6,26 +6,32 @@
             [ajax.util]
             [ajax.core :refer [GET POST ajax-request json-request-format json-response-format]]))
 
-(defn handler2 [[ok response]]
-  (if ok
-    (.log js/console (str response))
-    (.error js/console (str response))))
-(ajax-request
-  {:uri "/send-message"
-   :method :post
-   :params {:message "Hello World"
-            :user    "Bob"}
-   :handler handler2
-   :format (json-request-format)
-   :response-format (json-response-format {:keywords? true})})
-
-
 (def data (r/atom [{:id     1
                     :author "Pete Hunt"
                     :text   "This is one comment"}
                    {:id     2
                     :author "Jordan Walke"
                     :text   "This is *another* comment"}]))
+
+(defn handler2 [[ok response]]
+  (if ok
+    ;;(.log js/console (r/atom (vec (flatten (conj @data response)))))
+    ;;(doseq [item response] (swap! data (conj item)))
+    (doseq [item response] (swap! data conj item))
+    (.error js/console (str response))))
+
+(.log js/console data)
+
+(defn pull []
+  (ajax-request
+    {:uri             "http://localhost:3000/data.json"
+     :method          :get
+     ;;:params {:message "Hello World"
+     ;;         :user    "Bob"
+     :handler         handler2
+     :format          (json-request-format)
+     :response-format (json-response-format {:keywords? true})}))
+(pull)
 
 (defn comment-component [author comment]
   [:div
